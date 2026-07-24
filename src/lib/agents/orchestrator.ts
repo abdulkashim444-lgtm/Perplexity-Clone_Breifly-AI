@@ -102,7 +102,7 @@ export async function* runPipeline({
         yield { type: "status", step: "refining", detail: "Refining search" };
         const refined = plan.sub_queries.map((q) => `${q} explained in detail`);
         results = await runSearch(tavilyApiKey, refined);
-        const rescraped = await scrapeSources(tavilyApiKey, results);
+        const rescraped = await scrapeSources(tavilyApiKey, results, 6, lovableApiKey);
         scraped = [...uploadedDocs, ...rescraped];
         ranked = rankSources(query, scraped);
       }
