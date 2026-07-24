@@ -1,5 +1,6 @@
 import type { ScrapedDoc, SearchResult } from "./types";
 import { fetchAndExtractPdf, isPdfUrl } from "./pdf";
+import { fetchAndExtractImage, isImageUrl } from "./image";
 
 const BLOCKED = new Set(["pinterest.com", "quora.com"]);
 
