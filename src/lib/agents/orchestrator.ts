@@ -4,7 +4,8 @@ import { generateFollowUps } from "./followup";
 import { rankSources, sourceQualityLow } from "./ranking";
 import { runSearch, scrapeSources } from "./search";
 import { streamSynthesis } from "./synthesis";
-import type { ChatTurn, Citation, RankedSource } from "./types";
+import { extractUploadedPdf } from "./pdf";
+import type { ChatTurn, Citation, RankedSource, ScrapedDoc } from "./types";
 
 export type PipelineEvent =
   | { type: "status"; step: string; detail?: string }
@@ -14,11 +15,18 @@ export type PipelineEvent =
   | { type: "done"; answer: string; citations: Citation[]; followups: string[] }
   | { type: "error"; message: string };
 
+export interface PdfAttachment {
+  filename: string;
+  /** Base64 (no data-URL prefix) of the PDF bytes. */
+  base64: string;
+}
+
 interface RunArgs {
   lovableApiKey: string;
   tavilyApiKey: string;
   query: string;
   history: ChatTurn[];
+  attachments?: PdfAttachment[];
 }
 
 export async function* runPipeline({
@@ -26,6 +34,7 @@ export async function* runPipeline({
   tavilyApiKey,
   query,
   history,
+  attachments = [],
 }: RunArgs): AsyncGenerator<PipelineEvent> {
   const gateway = createLovableAiGateway(lovableApiKey);
   const fastModel = gateway("google/gemini-3.5-flash");
