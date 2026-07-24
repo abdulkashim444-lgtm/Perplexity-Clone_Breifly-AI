@@ -10,7 +10,7 @@ import { SourcesPanel } from "@/components/sources-panel";
 import { AgentStatus } from "@/components/agent-status";
 import { Button } from "@/components/ui/button";
 import { getThreadMessages } from "@/lib/threads.functions";
-import { streamChat, type StreamEvent } from "@/lib/sse-client";
+import { streamChat, type StreamEvent, type ChatAttachment } from "@/lib/sse-client";
 import type { Citation, ChatTurn } from "@/lib/agents/types";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -78,10 +78,14 @@ function ThreadView() {
   const buildHistory = (): ChatTurn[] =>
     messages.map((m) => ({ role: m.role, content: m.content }));
 
-  const ask = async (query: string) => {
+  const ask = async (query: string, attachments: ChatAttachment[] = []) => {
     if (running) return;
     setRunning(true);
-    const userMsg: UserMsg = { id: `tmp-u-${Date.now()}`, role: "user", content: query };
+    const attachmentNote =
+      attachments.length > 0
+        ? `\n\n_📎 ${attachments.length} PDF attached: ${attachments.map((a) => a.filename).join(", ")}_`
+        : "";
+    const userMsg: UserMsg = { id: `tmp-u-${Date.now()}`, role: "user", content: query + attachmentNote };
     const assistantId = `tmp-a-${Date.now()}`;
     const assistantMsg: AssistantMsg = {
       id: assistantId,
@@ -95,7 +99,7 @@ function ThreadView() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId, query, history })) {
+      for await (const ev of streamChat({ threadId, query, history, attachments })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {
@@ -145,7 +149,16 @@ function ThreadView() {
     if (bootstrappedFor.current === threadId) return;
     bootstrappedFor.current = threadId;
     if (q && data && data.messages.length === 0) {
-      ask(q);
+      const key = `pending-attachments:${threadId}`;
+      let pending: ChatAttachment[] = [];
+      try {
+        const raw = sessionStorage.getItem(key);
+        if (raw) pending = JSON.parse(raw) as ChatAttachment[];
+      } catch {
+        /* ignore */
+      }
+      sessionStorage.removeItem(key);
+      ask(q, pending);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, threadId, q, data]);

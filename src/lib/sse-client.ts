@@ -9,10 +9,16 @@ export type StreamEvent =
   | { type: "done"; answer: string; citations: Citation[]; followups: string[] }
   | { type: "error"; message: string };
 
+export interface ChatAttachment {
+  filename: string;
+  base64: string;
+}
+
 export async function* streamChat(args: {
   threadId: string;
   query: string;
   history: ChatTurn[];
+  attachments?: ChatAttachment[];
   signal?: AbortSignal;
 }): AsyncGenerator<StreamEvent> {
   const { data: sess } = await supabase.auth.getSession();
@@ -25,7 +31,12 @@ export async function* streamChat(args: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ threadId: args.threadId, query: args.query, history: args.history }),
+    body: JSON.stringify({
+      threadId: args.threadId,
+      query: args.query,
+      history: args.history,
+      attachments: args.attachments ?? [],
+    }),
     signal: args.signal,
   });
   if (!res.ok || !res.body) {

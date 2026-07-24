@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { runPipeline, type PipelineEvent } from "@/lib/agents/orchestrator";
+import { runPipeline, type PdfAttachment, type PipelineEvent } from "@/lib/agents/orchestrator";
 import type { ChatTurn } from "@/lib/agents/types";
 
 interface Body {
   threadId: string;
   query: string;
   history: ChatTurn[];
+  attachments?: PdfAttachment[];
 }
 
 function sseFrame(event: PipelineEvent): string {
@@ -82,6 +83,7 @@ export const Route = createFileRoute("/api/chat")({
                 tavilyApiKey: tavilyKey,
                 query: body.query,
                 history: body.history ?? [],
+                attachments: body.attachments ?? [],
               })) {
                 controller.enqueue(encoder.encode(sseFrame(event)));
                 if (event.type === "done") {
