@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { runPipeline, type PipelineEvent } from "@/lib/agents/orchestrator";
+import { runPipeline, type PdfAttachment, type PipelineEvent } from "@/lib/agents/orchestrator";
 import type { ChatTurn } from "@/lib/agents/types";
 
 interface Body {
   threadId: string;
   query: string;
   history: ChatTurn[];
+  attachments?: PdfAttachment[];
 }
 
 function sseFrame(event: PipelineEvent): string {
