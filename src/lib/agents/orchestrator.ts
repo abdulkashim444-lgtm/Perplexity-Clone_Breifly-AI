@@ -45,13 +45,14 @@ export async function* runPipeline({
   query,
   history,
   attachments = [],
+  imageAttachments = [],
 }: RunArgs): AsyncGenerator<PipelineEvent> {
   const gateway = createLovableAiGateway(lovableApiKey);
   const fastModel = gateway("google/gemini-3.5-flash");
   const answerModel = gateway("google/gemini-3.6-flash");
 
   try {
-    // Extract uploaded PDFs first — they become high-priority sources.
+    // Extract uploaded PDFs and images first — they become high-priority sources.
     let uploadedDocs: ScrapedDoc[] = [];
     if (attachments.length > 0) {
       yield {
@@ -62,8 +63,22 @@ export async function* runPipeline({
       const extracted = await Promise.all(
         attachments.map((a, i) => extractUploadedPdf(a.filename, a.base64, i)),
       );
-      uploadedDocs = extracted.filter((d): d is ScrapedDoc => d !== null);
+      uploadedDocs.push(...extracted.filter((d): d is ScrapedDoc => d !== null));
     }
+    if (imageAttachments.length > 0) {
+      yield {
+        type: "status",
+        step: "reading-uploads",
+        detail: `Reading ${imageAttachments.length} uploaded image${imageAttachments.length === 1 ? "" : "s"}`,
+      };
+      const extracted = await Promise.all(
+        imageAttachments.map((a, i) =>
+          extractUploadedImage(lovableApiKey, a.filename, a.base64, a.mimeType, i),
+        ),
+      );
+      uploadedDocs.push(...extracted.filter((d): d is ScrapedDoc => d !== null));
+    }
+
 
     yield { type: "status", step: "analyzing", detail: "Understanding your question" };
     const plan = await analyzeQuery(fastModel, query, history);
