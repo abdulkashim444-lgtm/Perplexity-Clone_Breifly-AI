@@ -82,6 +82,12 @@ export async function scrapeSources(
   const top = results.slice(0, topN);
   const scraped = await Promise.all(
     top.map(async (r): Promise<ScrapedDoc> => {
+      // PDF sources: extract text directly with unpdf.
+      if (isPdfUrl(r.url)) {
+        const pdf = await fetchAndExtractPdf(r.url, r.title);
+        if (pdf) return { ...pdf, published_date: r.published_date };
+        return { ...r, clean_text: r.snippet, word_count: r.snippet.split(/\s+/).length, fetch_status: "fallback" };
+      }
       try {
         const res = await fetch("https://api.tavily.com/extract", {
           method: "POST",
