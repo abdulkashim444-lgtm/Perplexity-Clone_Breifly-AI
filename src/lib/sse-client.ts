@@ -14,11 +14,18 @@ export interface ChatAttachment {
   base64: string;
 }
 
+export interface ImageChatAttachment {
+  filename: string;
+  base64: string;
+  mimeType: string;
+}
+
 export async function* streamChat(args: {
   threadId: string;
   query: string;
   history: ChatTurn[];
   attachments?: ChatAttachment[];
+  imageAttachments?: ImageChatAttachment[];
   signal?: AbortSignal;
 }): AsyncGenerator<StreamEvent> {
   const { data: sess } = await supabase.auth.getSession();
