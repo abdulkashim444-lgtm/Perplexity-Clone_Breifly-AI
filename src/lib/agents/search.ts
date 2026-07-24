@@ -1,5 +1,6 @@
 import type { ScrapedDoc, SearchResult } from "./types";
 import { fetchAndExtractPdf, isPdfUrl } from "./pdf";
+import { fetchAndExtractImage, isImageUrl } from "./image";
 
 const BLOCKED = new Set(["pinterest.com", "quora.com"]);
 
@@ -78,6 +79,7 @@ export async function scrapeSources(
   apiKey: string,
   results: SearchResult[],
   topN = 6,
+  lovableApiKey?: string,
 ): Promise<ScrapedDoc[]> {
   const top = results.slice(0, topN);
   const scraped = await Promise.all(
@@ -86,6 +88,12 @@ export async function scrapeSources(
       if (isPdfUrl(r.url)) {
         const pdf = await fetchAndExtractPdf(r.url, r.title);
         if (pdf) return { ...pdf, published_date: r.published_date };
+        return { ...r, clean_text: r.snippet, word_count: r.snippet.split(/\s+/).length, fetch_status: "fallback" };
+      }
+      // Image sources: multimodal caption/OCR via Gemini.
+      if (isImageUrl(r.url) && lovableApiKey) {
+        const img = await fetchAndExtractImage(lovableApiKey, r.url, r.title);
+        if (img) return { ...img, published_date: r.published_date };
         return { ...r, clean_text: r.snippet, word_count: r.snippet.split(/\s+/).length, fetch_status: "fallback" };
       }
       try {
@@ -109,3 +117,4 @@ export async function scrapeSources(
   );
   return scraped;
 }
+
