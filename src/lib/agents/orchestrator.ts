@@ -5,6 +5,7 @@ import { rankSources, sourceQualityLow } from "./ranking";
 import { runSearch, scrapeSources } from "./search";
 import { streamSynthesis } from "./synthesis";
 import { extractUploadedPdf } from "./pdf";
+import { extractUploadedImage } from "./image";
 import type { ChatTurn, Citation, RankedSource, ScrapedDoc } from "./types";
 
 export type PipelineEvent =
@@ -21,12 +22,21 @@ export interface PdfAttachment {
   base64: string;
 }
 
+export interface ImageAttachment {
+  filename: string;
+  /** Base64 (no data-URL prefix) of the image bytes. */
+  base64: string;
+  /** MIME type, e.g. image/png, image/jpeg, image/webp, image/gif. */
+  mimeType: string;
+}
+
 interface RunArgs {
   lovableApiKey: string;
   tavilyApiKey: string;
   query: string;
   history: ChatTurn[];
   attachments?: PdfAttachment[];
+  imageAttachments?: ImageAttachment[];
 }
 
 export async function* runPipeline({
