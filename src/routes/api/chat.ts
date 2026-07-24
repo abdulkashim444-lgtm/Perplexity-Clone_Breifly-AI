@@ -83,6 +83,7 @@ export const Route = createFileRoute("/api/chat")({
                 tavilyApiKey: tavilyKey,
                 query: body.query,
                 history: body.history ?? [],
+                attachments: body.attachments ?? [],
               })) {
                 controller.enqueue(encoder.encode(sseFrame(event)));
                 if (event.type === "done") {
