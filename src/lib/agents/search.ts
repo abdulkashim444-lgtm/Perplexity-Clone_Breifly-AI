@@ -1,4 +1,5 @@
 import type { ScrapedDoc, SearchResult } from "./types";
+import { fetchAndExtractPdf, isPdfUrl } from "./pdf";
 
 const BLOCKED = new Set(["pinterest.com", "quora.com"]);
 
