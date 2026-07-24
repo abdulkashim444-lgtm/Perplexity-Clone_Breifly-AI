@@ -92,7 +92,7 @@ export async function* runPipeline({
       let results = await runSearch(tavilyApiKey, plan.sub_queries);
 
       yield { type: "status", step: "reading", detail: `Reading ${Math.min(results.length, 6)} sources` };
-      const webScraped = await scrapeSources(tavilyApiKey, results);
+      const webScraped = await scrapeSources(tavilyApiKey, results, 6, lovableApiKey);
       scraped = [...uploadedDocs, ...webScraped];
 
       yield { type: "status", step: "ranking", detail: "Ranking sources" };
