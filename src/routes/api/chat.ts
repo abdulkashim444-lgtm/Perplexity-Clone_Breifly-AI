@@ -122,5 +122,3 @@ export const Route = createFileRoute("/api/chat")({
   },
 });
 
-// silence unused import warning
-void createServerClient;
