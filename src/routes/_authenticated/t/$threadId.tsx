@@ -149,7 +149,16 @@ function ThreadView() {
     if (bootstrappedFor.current === threadId) return;
     bootstrappedFor.current = threadId;
     if (q && data && data.messages.length === 0) {
-      ask(q);
+      const key = `pending-attachments:${threadId}`;
+      let pending: ChatAttachment[] = [];
+      try {
+        const raw = sessionStorage.getItem(key);
+        if (raw) pending = JSON.parse(raw) as ChatAttachment[];
+      } catch {
+        /* ignore */
+      }
+      sessionStorage.removeItem(key);
+      ask(q, pending);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, threadId, q, data]);
