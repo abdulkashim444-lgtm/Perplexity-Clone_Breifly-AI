@@ -43,6 +43,7 @@ export async function* streamChat(args: {
       query: args.query,
       history: args.history,
       attachments: args.attachments ?? [],
+      imageAttachments: args.imageAttachments ?? [],
     }),
     signal: args.signal,
   });
