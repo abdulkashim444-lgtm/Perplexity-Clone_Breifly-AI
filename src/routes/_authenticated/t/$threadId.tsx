@@ -157,16 +157,21 @@ function ThreadView() {
     if (bootstrappedFor.current === threadId) return;
     bootstrappedFor.current = threadId;
     if (q && data && data.messages.length === 0) {
-      const key = `pending-attachments:${threadId}`;
-      let pending: ChatAttachment[] = [];
+      const pdfKey = `pending-attachments:${threadId}`;
+      const imgKey = `pending-images:${threadId}`;
+      let pendingPdfs: ChatAttachment[] = [];
+      let pendingImgs: ImageChatAttachment[] = [];
       try {
-        const raw = sessionStorage.getItem(key);
-        if (raw) pending = JSON.parse(raw) as ChatAttachment[];
+        const rawPdf = sessionStorage.getItem(pdfKey);
+        if (rawPdf) pendingPdfs = JSON.parse(rawPdf) as ChatAttachment[];
+        const rawImg = sessionStorage.getItem(imgKey);
+        if (rawImg) pendingImgs = JSON.parse(rawImg) as ImageChatAttachment[];
       } catch {
         /* ignore */
       }
-      sessionStorage.removeItem(key);
-      ask(q, pending);
+      sessionStorage.removeItem(pdfKey);
+      sessionStorage.removeItem(imgKey);
+      ask(q, pendingPdfs, pendingImgs);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, threadId, q, data]);
