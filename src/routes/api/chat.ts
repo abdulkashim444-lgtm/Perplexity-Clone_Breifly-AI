@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerClient } from "@supabase/ssr";
+
 import { runPipeline, type PipelineEvent } from "@/lib/agents/orchestrator";
 import type { ChatTurn } from "@/lib/agents/types";
 
