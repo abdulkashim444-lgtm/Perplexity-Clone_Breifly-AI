@@ -78,10 +78,14 @@ function ThreadView() {
   const buildHistory = (): ChatTurn[] =>
     messages.map((m) => ({ role: m.role, content: m.content }));
 
-  const ask = async (query: string) => {
+  const ask = async (query: string, attachments: ChatAttachment[] = []) => {
     if (running) return;
     setRunning(true);
-    const userMsg: UserMsg = { id: `tmp-u-${Date.now()}`, role: "user", content: query };
+    const attachmentNote =
+      attachments.length > 0
+        ? `\n\n_📎 ${attachments.length} PDF attached: ${attachments.map((a) => a.filename).join(", ")}_`
+        : "";
+    const userMsg: UserMsg = { id: `tmp-u-${Date.now()}`, role: "user", content: query + attachmentNote };
     const assistantId = `tmp-a-${Date.now()}`;
     const assistantMsg: AssistantMsg = {
       id: assistantId,
@@ -95,7 +99,7 @@ function ThreadView() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId, query, history })) {
+      for await (const ev of streamChat({ threadId, query, history, attachments })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {
