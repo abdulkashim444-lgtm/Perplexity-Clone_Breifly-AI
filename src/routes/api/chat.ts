@@ -85,6 +85,7 @@ export const Route = createFileRoute("/api/chat")({
                 query: body.query,
                 history: body.history ?? [],
                 attachments: body.attachments ?? [],
+                imageAttachments: body.imageAttachments ?? [],
               })) {
                 controller.enqueue(encoder.encode(sseFrame(event)));
                 if (event.type === "done") {

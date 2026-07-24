@@ -10,7 +10,7 @@ import { SourcesPanel } from "@/components/sources-panel";
 import { AgentStatus } from "@/components/agent-status";
 import { Button } from "@/components/ui/button";
 import { getThreadMessages } from "@/lib/threads.functions";
-import { streamChat, type StreamEvent, type ChatAttachment } from "@/lib/sse-client";
+import { streamChat, type StreamEvent, type ChatAttachment, type ImageChatAttachment } from "@/lib/sse-client";
 import type { Citation, ChatTurn } from "@/lib/agents/types";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -78,13 +78,21 @@ function ThreadView() {
   const buildHistory = (): ChatTurn[] =>
     messages.map((m) => ({ role: m.role, content: m.content }));
 
-  const ask = async (query: string, attachments: ChatAttachment[] = []) => {
+  const ask = async (
+    query: string,
+    attachments: ChatAttachment[] = [],
+    imageAttachments: ImageChatAttachment[] = [],
+  ) => {
     if (running) return;
     setRunning(true);
-    const attachmentNote =
-      attachments.length > 0
-        ? `\n\n_📎 ${attachments.length} PDF attached: ${attachments.map((a) => a.filename).join(", ")}_`
-        : "";
+    const notes: string[] = [];
+    if (attachments.length > 0) {
+      notes.push(`📎 ${attachments.length} PDF: ${attachments.map((a) => a.filename).join(", ")}`);
+    }
+    if (imageAttachments.length > 0) {
+      notes.push(`🖼️ ${imageAttachments.length} image: ${imageAttachments.map((a) => a.filename).join(", ")}`);
+    }
+    const attachmentNote = notes.length ? `\n\n_${notes.join(" · ")}_` : "";
     const userMsg: UserMsg = { id: `tmp-u-${Date.now()}`, role: "user", content: query + attachmentNote };
     const assistantId = `tmp-a-${Date.now()}`;
     const assistantMsg: AssistantMsg = {
@@ -99,7 +107,7 @@ function ThreadView() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId, query, history, attachments })) {
+      for await (const ev of streamChat({ threadId, query, history, attachments, imageAttachments })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {
