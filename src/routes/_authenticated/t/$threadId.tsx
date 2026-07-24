@@ -10,7 +10,7 @@ import { SourcesPanel } from "@/components/sources-panel";
 import { AgentStatus } from "@/components/agent-status";
 import { Button } from "@/components/ui/button";
 import { getThreadMessages } from "@/lib/threads.functions";
-import { streamChat, type StreamEvent } from "@/lib/sse-client";
+import { streamChat, type StreamEvent, type ChatAttachment } from "@/lib/sse-client";
 import type { Citation, ChatTurn } from "@/lib/agents/types";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
