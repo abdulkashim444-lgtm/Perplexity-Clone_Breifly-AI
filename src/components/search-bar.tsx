@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { createThread } from "@/lib/threads.functions";
-import { ArrowUp, Paperclip, X, FileText, ImageIcon, Sparkles } from "lucide-react";
+import { ArrowUp, Paperclip, X, FileText, ImageIcon, Sparkles, Square } from "lucide-react";
 import { toast } from "sonner";
 import type { ChatAttachment, ImageChatAttachment } from "@/lib/sse-client";
 
