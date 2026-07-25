@@ -187,16 +187,37 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
           placeholder={placeholder ?? "Ask anything…"}
           className="w-full resize-none bg-transparent p-4 pr-14 text-base outline-none"
         />
-        <div className="flex items-center justify-between px-3 pb-2">
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground transition-colors"
-            title="Attach a PDF or image"
-          >
-            <Paperclip size={14} />
-            Attach PDF or image
-          </button>
+        <div className="flex items-center justify-between gap-2 px-3 pb-2">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground transition-colors"
+              title="Attach a PDF or image"
+            >
+              <Paperclip size={14} />
+              Attach
+            </button>
+            <button
+              type="button"
+              onClick={toggleSimplify}
+              aria-pressed={simplify}
+              title={
+                simplify
+                  ? "Simplify answer is ON — plain language, short, with citations"
+                  : "Simplify answer: rewrite in plain language for easier reading"
+              }
+              className={
+                "inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs border transition-colors " +
+                (simplify
+                  ? "bg-primary/10 border-primary/40 text-primary hover:bg-primary/15"
+                  : "border-transparent text-muted-foreground hover:bg-accent/60 hover:text-foreground")
+              }
+            >
+              <Sparkles size={14} />
+              Simplify answer
+            </button>
+          </div>
           <input
             ref={fileRef}
             type="file"
@@ -206,6 +227,7 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
             onChange={(e) => onPickFiles(e.target.files)}
           />
         </div>
+
       </div>
       <button
         type="submit"
