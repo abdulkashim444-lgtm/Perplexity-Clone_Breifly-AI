@@ -37,6 +37,7 @@ interface RunArgs {
   history: ChatTurn[];
   attachments?: PdfAttachment[];
   imageAttachments?: ImageAttachment[];
+  simplify?: boolean;
 }
 
 export async function* runPipeline({
@@ -46,7 +47,9 @@ export async function* runPipeline({
   history,
   attachments = [],
   imageAttachments = [],
+  simplify = false,
 }: RunArgs): AsyncGenerator<PipelineEvent> {
+
   const gateway = createLovableAiGateway(lovableApiKey);
   const fastModel = gateway("google/gemini-3.5-flash");
   const answerModel = gateway("google/gemini-3.6-flash");
