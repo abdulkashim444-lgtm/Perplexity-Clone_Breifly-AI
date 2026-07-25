@@ -226,7 +226,7 @@ function ThreadView() {
         </div>
         <div className="border-t bg-background/80 backdrop-blur">
           <div className="max-w-3xl mx-auto px-6 py-4">
-            <SearchBar onSubmit={ask} placeholder="Ask a follow-up…" />
+            <SearchBar onSubmit={ask} placeholder="Ask a follow-up…" isRunning={running} onStop={stop} />
           </div>
         </div>
       </main>
