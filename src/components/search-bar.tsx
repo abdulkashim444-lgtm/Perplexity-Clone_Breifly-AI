@@ -44,10 +44,28 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
   const [pdfs, setPdfs] = useState<ChatAttachment[]>([]);
   const [images, setImages] = useState<ImageChatAttachment[]>([]);
   const [busy, setBusy] = useState(false);
+  const [simplify, setSimplify] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const createFn = useServerFn(createThread);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setSimplify(getSimplifyPref());
+  }, []);
+
+  const toggleSimplify = () => {
+    setSimplify((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(SIMPLIFY_STORAGE_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
+
 
   const onPickFiles = async (files: FileList | null) => {
     if (!files) return;
