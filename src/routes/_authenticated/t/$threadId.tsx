@@ -191,8 +191,10 @@ function ThreadView() {
           <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
             {messages.map((m) =>
               m.role === "user" ? (
-                <div key={m.id}>
-                  <h2 className="font-serif text-2xl leading-snug">{m.content}</h2>
+                <div key={m.id} className="flex justify-end">
+                  <div className="max-w-[80%] rounded-2xl bg-accent/60 border px-4 py-2.5 text-sm whitespace-pre-wrap">
+                    {m.content}
+                  </div>
                 </div>
               ) : (
                 <AssistantBlock key={m.id} msg={m} onFollowup={ask} disabled={running} />
