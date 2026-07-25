@@ -8,9 +8,9 @@ import type { ChatAttachment, ImageChatAttachment } from "@/lib/sse-client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Searchly — AI answer engine" },
-      { name: "description", content: "Ask anything. Searchly reads the live web and streams cited answers — no sign-in required." },
-      { property: "og:title", content: "Searchly — AI answer engine" },
+      { title: "Breifly AI — AI answer engine" },
+      { name: "description", content: "Ask anything. Breifly AI reads the live web and streams cited answers — no sign-in required." },
+      { property: "og:title", content: "Breifly AI — AI answer engine" },
       { property: "og:description", content: "Cited AI answers, streamed live. Try it free — no sign-in required." },
     ],
   }),
@@ -54,8 +54,8 @@ function Landing() {
         {!signedIn && (
           <header className="flex items-center justify-between px-6 py-4 border-b">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/favicon.png" alt="Searchly" width={28} height={28} className="w-7 h-7 rounded-lg" />
-              <span className="font-serif text-lg">Searchly</span>
+              <img src="/favicon.png" alt="Breifly AI" width={28} height={28} className="w-7 h-7 rounded-lg" />
+              <span className="font-serif text-lg">Breifly AI</span>
             </Link>
             <Link
               to="/auth"

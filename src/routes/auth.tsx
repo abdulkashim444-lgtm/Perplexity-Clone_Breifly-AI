@@ -9,10 +9,10 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Searchly" },
-      { name: "description", content: "Sign in to Searchly, the cited AI answer engine." },
-      { property: "og:title", content: "Sign in — Searchly" },
-      { property: "og:description", content: "Sign in to Searchly, the cited AI answer engine." },
+      { title: "Sign in — Breifly AI" },
+      { name: "description", content: "Sign in to Breifly AI, the cited AI answer engine." },
+      { property: "og:title", content: "Sign in — Breifly AI" },
+      { property: "og:description", content: "Sign in to Breifly AI, the cited AI answer engine." },
     ],
   }),
   component: AuthPage,
@@ -69,8 +69,8 @@ function AuthPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <img src="/favicon.png" alt="Searchly" width={32} height={32} className="w-8 h-8 rounded-lg" />
-            <span className="font-serif text-2xl">Searchly</span>
+            <img src="/favicon.png" alt="Breifly AI" width={32} height={32} className="w-8 h-8 rounded-lg" />
+            <span className="font-serif text-2xl">Breifly AI</span>
           </div>
           <h1 className="font-serif text-3xl leading-tight">Ask the web anything.</h1>
           <p className="text-sm text-muted-foreground mt-2">Cited answers, streamed live.</p>

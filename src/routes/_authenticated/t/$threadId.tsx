@@ -23,8 +23,8 @@ export const Route = createFileRoute("/_authenticated/t/$threadId")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Thread — Searchly" },
-      { name: "description", content: "A cited answer thread on Searchly." },
+      { title: "Thread — Breifly AI" },
+      { name: "description", content: "A cited answer thread on Breifly AI." },
     ],
   }),
   component: ThreadView,

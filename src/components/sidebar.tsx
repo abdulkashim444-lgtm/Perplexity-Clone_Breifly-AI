@@ -40,8 +40,8 @@ export function Sidebar() {
     <aside className="w-64 shrink-0 h-screen sticky top-0 flex flex-col bg-sidebar border-r border-sidebar-border">
       <div className="p-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/favicon.png" alt="Searchly" width={28} height={28} className="w-7 h-7 rounded-lg" />
-          <span className="font-serif text-lg">Searchly</span>
+          <img src="/favicon.png" alt="Breifly AI" width={28} height={28} className="w-7 h-7 rounded-lg" />
+          <span className="font-serif text-lg">Breifly AI</span>
         </Link>
       </div>
       <div className="px-3 pb-3">

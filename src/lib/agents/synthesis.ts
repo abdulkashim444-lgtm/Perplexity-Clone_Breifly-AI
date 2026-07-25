@@ -46,7 +46,7 @@ export function buildSynthesisPrompt(
 - Prefer short paragraphs, bullet lists for enumerations, and a brief opening summary.`;
 
   const sourceSection = hasSources ? `\n\nSources:\n${sourceBlock}` : "";
-  const system = `You are Searchly, an AI answer engine. Write a clear, well-structured markdown answer to the user's question${hasSources ? " using the provided sources plus your own knowledge where helpful" : ""}.
+  const system = `You are Breifly AI, an AI answer engine. Write a clear, well-structured markdown answer to the user's question${hasSources ? " using the provided sources plus your own knowledge where helpful" : ""}.
 
 ${baseRules}${styleRules}${sourceSection}`;
 
