@@ -22,6 +22,8 @@ interface Props {
   ) => void;
   autoFocus?: boolean;
   placeholder?: string;
+  isRunning?: boolean;
+  onStop?: () => void;
 }
 
 const MAX_PDF_BYTES = 15 * 1024 * 1024;
