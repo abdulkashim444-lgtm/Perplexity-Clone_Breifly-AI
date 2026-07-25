@@ -1,11 +1,18 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createThread } from "@/lib/threads.functions";
-import { ArrowUp, Paperclip, X, FileText, ImageIcon } from "lucide-react";
+import { ArrowUp, Paperclip, X, FileText, ImageIcon, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import type { ChatAttachment, ImageChatAttachment } from "@/lib/sse-client";
+
+export const SIMPLIFY_STORAGE_KEY = "searchly:simplify";
+export function getSimplifyPref(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(SIMPLIFY_STORAGE_KEY) === "1";
+}
+
 
 interface Props {
   onSubmit?: (
