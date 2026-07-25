@@ -10,7 +10,9 @@ interface Body {
   attachments?: PdfAttachment[];
   imageAttachments?: ImageAttachment[];
   guest?: boolean;
+  simplify?: boolean;
 }
+
 
 function sseFrame(event: PipelineEvent): string {
   return `data: ${JSON.stringify(event)}\n\n`;
