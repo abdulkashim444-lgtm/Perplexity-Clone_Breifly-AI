@@ -15,12 +15,18 @@ export function buildSynthesisPrompt(
     )
     .join("\n\n---\n\n");
 
+  const hasUpload = sources.some((s) => s.url.startsWith("attachment://"));
+  const uploadRule = hasUpload
+    ? `\n- The user attached one or more files (sources whose URL starts with "attachment://"). Treat these as the primary subject. If the question is vague like "what is this", "summarize", or "explain", describe and summarize the attached source(s) directly — do not ask for more context.`
+    : "";
+
   const baseRules = `Rules:
 - Every factual claim MUST include an inline citation like [1] or [2, 3] matching the source numbers below.
 - Do not invent facts or citations outside the numbered list.
 - If sources conflict, explicitly say so and cite both sides.
 - If the sources don't answer the question, say what's missing rather than guessing.
-- Do not include a "Sources" section — the UI renders that separately.`;
+- Do not include a "Sources" section — the UI renders that separately.${uploadRule}`;
+
 
   const simplifyRules = `
 - SIMPLIFY MODE: write for a curious 12-year-old. Use short sentences (max ~15 words), plain everyday words, and no jargon. If a technical term is unavoidable, define it in parentheses.
