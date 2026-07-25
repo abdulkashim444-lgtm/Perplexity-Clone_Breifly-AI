@@ -34,6 +34,23 @@ export function buildSynthesisPrompt(
 - Do not fabricate citation markers like [1] since there are no sources.
 - For coding questions, include a complete, correct, runnable code solution with a short explanation.`;
 
+  const simplifyRules = `
+- SIMPLIFY MODE: write for a curious 12-year-old. Use short sentences (max ~15 words), plain everyday words, and no jargon. If a technical term is unavoidable, define it in parentheses.
+- Start with a one-sentence TL;DR in **bold**.
+- Prefer bullet lists over paragraphs. Keep each bullet to one idea.
+- Keep the whole answer under ~180 words unless the question truly needs more.${hasSources ? "\n- Still keep inline citations like [1] on every factual claim." : ""}`;
+
+  const styleRules = simplify
+    ? simplifyRules
+    : `
+- Prefer short paragraphs, bullet lists for enumerations, and a brief opening summary.`;
+
+  const sourceSection = hasSources ? `\n\nSources:\n${sourceBlock}` : "";
+  const system = `You are Searchly, an AI answer engine. Write a clear, well-structured markdown answer to the user's question${hasSources ? " using the provided sources plus your own knowledge where helpful" : ""}.
+
+${baseRules}${styleRules}${sourceSection}`;
+
+
 
   const messages: { role: "user" | "assistant"; content: string }[] = [
     ...history.slice(-4).map((h) => ({ role: h.role, content: h.content })),
