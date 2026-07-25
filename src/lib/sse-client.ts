@@ -27,23 +27,25 @@ export async function* streamChat(args: {
   attachments?: ChatAttachment[];
   imageAttachments?: ImageChatAttachment[];
   signal?: AbortSignal;
+  guest?: boolean;
 }): AsyncGenerator<StreamEvent> {
-  const { data: sess } = await supabase.auth.getSession();
-  const token = sess.session?.access_token;
-  if (!token) throw new Error("Not signed in");
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (!args.guest) {
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess.session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+  }
 
   const res = await fetch("/api/chat", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify({
       threadId: args.threadId,
       query: args.query,
       history: args.history,
       attachments: args.attachments ?? [],
       imageAttachments: args.imageAttachments ?? [],
+      guest: args.guest ?? false,
     }),
     signal: args.signal,
   });
