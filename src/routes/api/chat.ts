@@ -9,6 +9,7 @@ interface Body {
   history: ChatTurn[];
   attachments?: PdfAttachment[];
   imageAttachments?: ImageAttachment[];
+  guest?: boolean;
 }
 
 function sseFrame(event: PipelineEvent): string {
@@ -25,52 +26,63 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Missing API keys", { status: 500 });
         }
 
-        // Verify auth via bearer
-        const auth = request.headers.get("authorization") ?? "";
-        const token = auth.replace(/^Bearer\s+/i, "");
-        if (!token) return new Response("Unauthorized", { status: 401 });
-
-        const sbUrl = process.env.SUPABASE_URL!;
-        const sbKey = process.env.SUPABASE_PUBLISHABLE_KEY!;
-        const { createClient } = await import("@supabase/supabase-js");
-        const supabase = createClient(sbUrl, sbKey, {
-          global: { headers: { Authorization: `Bearer ${token}` } },
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
-        const { data: userData, error: userErr } = await supabase.auth.getUser();
-        if (userErr || !userData.user) return new Response("Unauthorized", { status: 401 });
-        const userId = userData.user.id;
-
         let body: Body;
         try {
           body = (await request.json()) as Body;
         } catch {
           return new Response("Invalid JSON", { status: 400 });
         }
-        if (!body.query?.trim() || !body.threadId) {
-          return new Response("Missing query or threadId", { status: 400 });
+        if (!body.query?.trim()) {
+          return new Response("Missing query", { status: 400 });
         }
 
-        // Persist user message
-        await supabase.from("messages").insert({
-          thread_id: body.threadId,
-          user_id: userId,
-          role: "user",
-          content: body.query,
-        });
+        // Guest mode: no auth, no persistence
+        const guest = body.guest === true;
+        let supabase: any = null;
+        let userId: string | null = null;
 
-        // Update thread title if still default
-        const { data: thread } = await supabase
-          .from("threads")
-          .select("title")
-          .eq("id", body.threadId)
-          .maybeSingle();
-        if (thread && (thread.title === "New search" || !thread.title)) {
-          await supabase
+        if (!guest) {
+          const auth = request.headers.get("authorization") ?? "";
+          const token = auth.replace(/^Bearer\s+/i, "");
+          if (!token) return new Response("Unauthorized", { status: 401 });
+
+          const sbUrl = process.env.SUPABASE_URL!;
+          const sbKey = process.env.SUPABASE_PUBLISHABLE_KEY!;
+          const { createClient } = await import("@supabase/supabase-js");
+          supabase = createClient(sbUrl, sbKey, {
+            global: { headers: { Authorization: `Bearer ${token}` } },
+            auth: { persistSession: false, autoRefreshToken: false },
+          });
+          const { data: userData, error: userErr } = await supabase.auth.getUser();
+          if (userErr || !userData.user) return new Response("Unauthorized", { status: 401 });
+          userId = userData.user.id;
+
+          if (!body.threadId) {
+            return new Response("Missing threadId", { status: 400 });
+          }
+
+          // Persist user message
+          await supabase.from("messages").insert({
+            thread_id: body.threadId,
+            user_id: userId,
+            role: "user",
+            content: body.query,
+          });
+
+          // Update thread title if still default
+          const { data: thread } = await supabase
             .from("threads")
-            .update({ title: body.query.slice(0, 80) })
-            .eq("id", body.threadId);
+            .select("title")
+            .eq("id", body.threadId)
+            .maybeSingle();
+          if (thread && (thread.title === "New search" || !thread.title)) {
+            await supabase
+              .from("threads")
+              .update({ title: body.query.slice(0, 80) })
+              .eq("id", body.threadId);
+          }
         }
+
 
         const encoder = new TextEncoder();
         const stream = new ReadableStream<Uint8Array>({
@@ -94,8 +106,8 @@ export const Route = createFileRoute("/api/chat")({
                   finalFollowups = event.followups;
                 }
               }
-              // Persist assistant message
-              if (finalAnswer) {
+              // Persist assistant message (skip for guests)
+              if (finalAnswer && supabase && userId) {
                 await supabase.from("messages").insert({
                   thread_id: body.threadId,
                   user_id: userId,
