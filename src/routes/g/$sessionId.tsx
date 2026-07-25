@@ -47,6 +47,7 @@ function GuestThread() {
   const { q } = Route.useSearch();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [running, setRunning] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bootstrapped = useRef(false);
 
