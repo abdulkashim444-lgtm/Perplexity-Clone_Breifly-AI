@@ -87,10 +87,18 @@ export async function* runPipeline({
     const plan = await analyzeQuery(fastModel, query, history);
 
     let ranked: RankedSource[] = [];
-    // Force search when there's no upload; skip only when the planner says no search AND we have uploads.
-    const shouldSearch = plan.needs_search && !(uploadedDocs.length > 0 && !plan.needs_search);
     let scraped: ScrapedDoc[] = [...uploadedDocs];
-    if (plan.needs_search) {
+
+    // When the user attached files, answer from those files. Only search the
+    // web if the query clearly asks for outside info (e.g. "compare with…",
+    // "latest news on…"). Otherwise a vague prompt like "what is this" ran a
+    // web search for "what is this" and drowned the uploaded PDF in junk.
+    const hasUploads = uploadedDocs.length > 0;
+    const wantsExternal = hasUploads
+      ? /\b(latest|news|compare|vs\.?|versus|recent|today|price|current|according to|online|web|internet|search)\b/i.test(query)
+      : plan.needs_search;
+
+    if (wantsExternal) {
       yield { type: "status", step: "searching", detail: `Searching ${plan.sub_queries.length} ${plan.sub_queries.length === 1 ? "query" : "queries"}` };
       let results = await runSearch(tavilyApiKey, plan.sub_queries);
 
@@ -101,7 +109,7 @@ export async function* runPipeline({
       yield { type: "status", step: "ranking", detail: "Ranking sources" };
       ranked = rankSources(query, scraped);
 
-      if (sourceQualityLow(ranked) && plan.sub_queries.length > 0) {
+      if (!hasUploads && sourceQualityLow(ranked) && plan.sub_queries.length > 0) {
         yield { type: "status", step: "refining", detail: "Refining search" };
         const refined = plan.sub_queries.map((q) => `${q} explained in detail`);
         results = await runSearch(tavilyApiKey, refined);
@@ -109,11 +117,12 @@ export async function* runPipeline({
         scraped = [...uploadedDocs, ...rescraped];
         ranked = rankSources(query, scraped);
       }
-    } else if (uploadedDocs.length > 0) {
-      yield { type: "status", step: "ranking", detail: "Ranking sources" };
+    } else if (hasUploads) {
+      yield { type: "status", step: "ranking", detail: "Ranking attached sources" };
       ranked = rankSources(query, uploadedDocs);
     }
-    void shouldSearch;
+    void scraped;
+
 
     const citations: Citation[] = ranked.map((s) => ({
       id: s.citation_id,
