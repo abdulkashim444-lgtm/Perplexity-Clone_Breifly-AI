@@ -53,6 +53,7 @@ function ThreadView() {
   const qc = useQueryClient();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [running, setRunning] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bootstrappedFor = useRef<string | null>(null);
 
@@ -87,6 +88,8 @@ function ThreadView() {
   ) => {
     if (running) return;
     setRunning(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
     const notes: string[] = [];
     if (attachments.length > 0) {
       notes.push(`📎 ${attachments.length} PDF: ${attachments.map((a) => a.filename).join(", ")}`);
@@ -109,20 +112,36 @@ function ThreadView() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId, query, history, attachments, imageAttachments, simplify: getSimplifyPref() })) {
+      for await (const ev of streamChat({ threadId, query, history, attachments, imageAttachments, simplify: getSimplifyPref(), signal: controller.signal })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong");
-      setMessages((prev) =>
-        prev.map((m) => (m.id === assistantId && m.role === "assistant" ? { ...m, streaming: false } : m)),
-      );
+      if (controller.signal.aborted || (err instanceof DOMException && err.name === "AbortError")) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId && m.role === "assistant"
+              ? { ...m, streaming: false, status: undefined, content: m.content ? `${m.content}\n\n_Stopped._` : "_Stopped._" }
+              : m,
+          ),
+        );
+      } else {
+        toast.error(err instanceof Error ? err.message : "Something went wrong");
+        setMessages((prev) =>
+          prev.map((m) => (m.id === assistantId && m.role === "assistant" ? { ...m, streaming: false } : m)),
+        );
+      }
     } finally {
+      abortRef.current = null;
       setRunning(false);
       qc.invalidateQueries({ queryKey: ["threads"] });
       qc.invalidateQueries({ queryKey: ["thread", threadId] });
     }
   };
+
+  const stop = () => {
+    abortRef.current?.abort();
+  };
+
 
   const handleEvent = (ev: StreamEvent, id: string) => {
     setMessages((prev) =>
@@ -207,7 +226,7 @@ function ThreadView() {
         </div>
         <div className="border-t bg-background/80 backdrop-blur">
           <div className="max-w-3xl mx-auto px-6 py-4">
-            <SearchBar onSubmit={ask} placeholder="Ask a follow-up…" />
+            <SearchBar onSubmit={ask} placeholder="Ask a follow-up…" isRunning={running} onStop={stop} />
           </div>
         </div>
       </main>

@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { createThread } from "@/lib/threads.functions";
-import { ArrowUp, Paperclip, X, FileText, ImageIcon, Sparkles } from "lucide-react";
+import { ArrowUp, Paperclip, X, FileText, ImageIcon, Sparkles, Square } from "lucide-react";
 import { toast } from "sonner";
 import type { ChatAttachment, ImageChatAttachment } from "@/lib/sse-client";
 
@@ -22,6 +22,8 @@ interface Props {
   ) => void;
   autoFocus?: boolean;
   placeholder?: string;
+  isRunning?: boolean;
+  onStop?: () => void;
 }
 
 const MAX_PDF_BYTES = 15 * 1024 * 1024;
@@ -39,7 +41,7 @@ async function fileToBase64(file: File): Promise<string> {
   return btoa(bin);
 }
 
-export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
+export function SearchBar({ onSubmit, autoFocus, placeholder, isRunning, onStop }: Props) {
   const [value, setValue] = useState("");
   const [pdfs, setPdfs] = useState<ChatAttachment[]>([]);
   const [images, setImages] = useState<ImageChatAttachment[]>([]);
@@ -229,14 +231,26 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
         </div>
 
       </div>
-      <button
-        type="submit"
-        disabled={(!value.trim() && totalAttachments === 0) || busy}
-        className="absolute right-3 top-3 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
-        aria-label="Ask"
-      >
-        <ArrowUp size={18} />
-      </button>
+      {isRunning && onStop ? (
+        <button
+          type="button"
+          onClick={onStop}
+          className="absolute right-3 top-3 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
+          aria-label="Stop"
+          title="Stop generating"
+        >
+          <Square size={14} fill="currentColor" />
+        </button>
+      ) : (
+        <button
+          type="submit"
+          disabled={(!value.trim() && totalAttachments === 0) || busy}
+          className="absolute right-3 top-3 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
+          aria-label="Ask"
+        >
+          <ArrowUp size={18} />
+        </button>
+      )}
     </form>
   );
 }
