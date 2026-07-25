@@ -1,11 +1,18 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createThread } from "@/lib/threads.functions";
-import { ArrowUp, Paperclip, X, FileText, ImageIcon } from "lucide-react";
+import { ArrowUp, Paperclip, X, FileText, ImageIcon, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import type { ChatAttachment, ImageChatAttachment } from "@/lib/sse-client";
+
+export const SIMPLIFY_STORAGE_KEY = "searchly:simplify";
+export function getSimplifyPref(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(SIMPLIFY_STORAGE_KEY) === "1";
+}
+
 
 interface Props {
   onSubmit?: (
@@ -37,10 +44,28 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
   const [pdfs, setPdfs] = useState<ChatAttachment[]>([]);
   const [images, setImages] = useState<ImageChatAttachment[]>([]);
   const [busy, setBusy] = useState(false);
+  const [simplify, setSimplify] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const createFn = useServerFn(createThread);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setSimplify(getSimplifyPref());
+  }, []);
+
+  const toggleSimplify = () => {
+    setSimplify((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(SIMPLIFY_STORAGE_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
+
 
   const onPickFiles = async (files: FileList | null) => {
     if (!files) return;
@@ -162,16 +187,37 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
           placeholder={placeholder ?? "Ask anything…"}
           className="w-full resize-none bg-transparent p-4 pr-14 text-base outline-none"
         />
-        <div className="flex items-center justify-between px-3 pb-2">
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground transition-colors"
-            title="Attach a PDF or image"
-          >
-            <Paperclip size={14} />
-            Attach PDF or image
-          </button>
+        <div className="flex items-center justify-between gap-2 px-3 pb-2">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground transition-colors"
+              title="Attach a PDF or image"
+            >
+              <Paperclip size={14} />
+              Attach
+            </button>
+            <button
+              type="button"
+              onClick={toggleSimplify}
+              aria-pressed={simplify}
+              title={
+                simplify
+                  ? "Simplify answer is ON — plain language, short, with citations"
+                  : "Simplify answer: rewrite in plain language for easier reading"
+              }
+              className={
+                "inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs border transition-colors " +
+                (simplify
+                  ? "bg-primary/10 border-primary/40 text-primary hover:bg-primary/15"
+                  : "border-transparent text-muted-foreground hover:bg-accent/60 hover:text-foreground")
+              }
+            >
+              <Sparkles size={14} />
+              Simplify answer
+            </button>
+          </div>
           <input
             ref={fileRef}
             type="file"
@@ -181,6 +227,7 @@ export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
             onChange={(e) => onPickFiles(e.target.files)}
           />
         </div>
+
       </div>
       <button
         type="submit"

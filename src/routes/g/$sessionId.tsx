@@ -7,6 +7,8 @@ import { SourcesPanel } from "@/components/sources-panel";
 import { AgentStatus } from "@/components/agent-status";
 import { Button } from "@/components/ui/button";
 import { streamChat, type StreamEvent, type ChatAttachment, type ImageChatAttachment } from "@/lib/sse-client";
+import { getSimplifyPref } from "@/components/search-bar";
+
 import type { Citation, ChatTurn } from "@/lib/agents/types";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -76,7 +78,7 @@ function GuestThread() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId: sessionId, query, history, attachments, imageAttachments, guest: true })) {
+      for await (const ev of streamChat({ threadId: sessionId, query, history, attachments, imageAttachments, guest: true, simplify: getSimplifyPref() })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {

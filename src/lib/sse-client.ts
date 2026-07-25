@@ -28,6 +28,7 @@ export async function* streamChat(args: {
   imageAttachments?: ImageChatAttachment[];
   signal?: AbortSignal;
   guest?: boolean;
+  simplify?: boolean;
 }): AsyncGenerator<StreamEvent> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (!args.guest) {
@@ -46,9 +47,11 @@ export async function* streamChat(args: {
       attachments: args.attachments ?? [],
       imageAttachments: args.imageAttachments ?? [],
       guest: args.guest ?? false,
+      simplify: args.simplify ?? false,
     }),
     signal: args.signal,
   });
+
   if (!res.ok || !res.body) {
     throw new Error(`Chat request failed: ${res.status}`);
   }
