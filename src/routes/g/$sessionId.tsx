@@ -78,7 +78,7 @@ function GuestThread() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId: sessionId, query, history, attachments, imageAttachments, guest: true })) {
+      for await (const ev of streamChat({ threadId: sessionId, query, history, attachments, imageAttachments, guest: true, simplify: getSimplifyPref() })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {
