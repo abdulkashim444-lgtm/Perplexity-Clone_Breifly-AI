@@ -109,7 +109,7 @@ function ThreadView() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      for await (const ev of streamChat({ threadId, query, history, attachments, imageAttachments })) {
+      for await (const ev of streamChat({ threadId, query, history, attachments, imageAttachments, simplify: getSimplifyPref() })) {
         handleEvent(ev, assistantId);
       }
     } catch (err) {
