@@ -81,3 +81,5 @@ Inspired by Perplexity AI, ChatGPT Search, Google AI Mode, and Microsoft Copilot
 ## 🌟 Vision
 
 Breifly AI aims to redefine online research by combining conversational AI, intelligent search, and modern web technologies into a fast, intuitive, and production-ready knowledge platform that helps users discover, understand, and summarize information efficiently.
+
+Check out : https://breiflyai.lovable.app/
