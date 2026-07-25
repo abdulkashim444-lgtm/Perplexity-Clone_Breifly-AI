@@ -100,7 +100,9 @@ export const Route = createFileRoute("/api/chat")({
                 history: body.history ?? [],
                 attachments: body.attachments ?? [],
                 imageAttachments: body.imageAttachments ?? [],
+                simplify: body.simplify === true,
               })) {
+
                 controller.enqueue(encoder.encode(sseFrame(event)));
                 if (event.type === "done") {
                   finalAnswer = event.answer;
