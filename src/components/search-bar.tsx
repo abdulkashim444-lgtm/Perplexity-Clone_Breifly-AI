@@ -41,7 +41,7 @@ async function fileToBase64(file: File): Promise<string> {
   return btoa(bin);
 }
 
-export function SearchBar({ onSubmit, autoFocus, placeholder }: Props) {
+export function SearchBar({ onSubmit, autoFocus, placeholder, isRunning, onStop }: Props) {
   const [value, setValue] = useState("");
   const [pdfs, setPdfs] = useState<ChatAttachment[]>([]);
   const [images, setImages] = useState<ImageChatAttachment[]>([]);
