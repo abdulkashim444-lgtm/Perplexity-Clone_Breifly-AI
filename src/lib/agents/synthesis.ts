@@ -6,6 +6,7 @@ export function buildSynthesisPrompt(
   query: string,
   sources: RankedSource[],
   history: ChatTurn[],
+  simplify = false,
 ): { system: string; messages: { role: "user" | "assistant"; content: string }[] } {
   const sourceBlock = sources
     .map(
@@ -14,15 +15,28 @@ export function buildSynthesisPrompt(
     )
     .join("\n\n---\n\n");
 
-  const system = `You are Searchly, an AI answer engine. Write a clear, well-structured markdown answer to the user's question using ONLY the provided sources.
-
-Rules:
+  const baseRules = `Rules:
 - Every factual claim MUST include an inline citation like [1] or [2, 3] matching the source numbers below.
 - Do not invent facts or citations outside the numbered list.
 - If sources conflict, explicitly say so and cite both sides.
 - If the sources don't answer the question, say what's missing rather than guessing.
-- Prefer short paragraphs, bullet lists for enumerations, and a brief opening summary.
-- Do not include a "Sources" section — the UI renders that separately.
+- Do not include a "Sources" section — the UI renders that separately.`;
+
+  const simplifyRules = `
+- SIMPLIFY MODE: write for a curious 12-year-old. Use short sentences (max ~15 words), plain everyday words, and no jargon. If a technical term is unavoidable, define it in parentheses.
+- Start with a one-sentence TL;DR in **bold**.
+- Prefer bullet lists over paragraphs. Keep each bullet to one idea.
+- Keep the whole answer under ~180 words unless the question truly needs more.
+- Still keep inline citations like [1] on every factual claim.`;
+
+  const styleRules = simplify
+    ? simplifyRules
+    : `
+- Prefer short paragraphs, bullet lists for enumerations, and a brief opening summary.`;
+
+  const system = `You are Searchly, an AI answer engine. Write a clear, well-structured markdown answer to the user's question using ONLY the provided sources.
+
+${baseRules}${styleRules}
 
 Sources:
 ${sourceBlock}`;
@@ -39,7 +53,9 @@ export function streamSynthesis(
   query: string,
   sources: RankedSource[],
   history: ChatTurn[],
+  simplify = false,
 ) {
-  const { system, messages } = buildSynthesisPrompt(query, sources, history);
+  const { system, messages } = buildSynthesisPrompt(query, sources, history, simplify);
   return streamText({ model, system, messages });
 }
+
