@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
       { title: "Breifly AI — AI answer engine" },
       { name: "description", content: "Ask anything. Breifly AI reads the live web and streams cited answers — no sign-in required." },
       { property: "og:title", content: "Breifly AI — AI answer engine" },
-      { property: "og:description", content: "Cited AI answers, streamed live. Try it free — no sign-in required." },
+      { property: "og:description", content: "Ask anything. Breifly AI reads the live web and streams cited answers — no sign-in required." },
     ],
   }),
   component: Landing,
