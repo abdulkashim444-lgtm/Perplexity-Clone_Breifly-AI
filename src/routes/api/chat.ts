@@ -106,8 +106,8 @@ export const Route = createFileRoute("/api/chat")({
                   finalFollowups = event.followups;
                 }
               }
-              // Persist assistant message
-              if (finalAnswer) {
+              // Persist assistant message (skip for guests)
+              if (finalAnswer && supabase && userId) {
                 await supabase.from("messages").insert({
                   thread_id: body.threadId,
                   user_id: userId,
