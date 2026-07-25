@@ -23,7 +23,7 @@ function transform(text: string, citations: Citation[]): string {
 export function AnswerMarkdown({ content, citations }: Props) {
   const prepared = transform(content, citations);
   return (
-    <div className="prose prose-neutral max-w-none prose-headings:font-serif prose-p:leading-relaxed prose-a:text-primary">
+    <div className="prose prose-invert max-w-none prose-headings:font-serif prose-p:font-serif prose-p:text-[1.05rem] prose-p:leading-relaxed prose-li:font-serif prose-li:leading-relaxed prose-a:text-primary prose-strong:text-foreground">
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{prepared}</ReactMarkdown>
     </div>
   );
