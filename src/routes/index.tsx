@@ -54,7 +54,7 @@ function Landing() {
         {!signedIn && (
           <header className="flex items-center justify-between px-6 py-4 border-b">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-serif">S</div>
+              <img src="/favicon.png" alt="Searchly" width={28} height={28} className="w-7 h-7 rounded-lg" />
               <span className="font-serif text-lg">Searchly</span>
             </Link>
             <Link
