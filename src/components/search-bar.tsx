@@ -231,14 +231,26 @@ export function SearchBar({ onSubmit, autoFocus, placeholder, isRunning, onStop 
         </div>
 
       </div>
-      <button
-        type="submit"
-        disabled={(!value.trim() && totalAttachments === 0) || busy}
-        className="absolute right-3 top-3 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
-        aria-label="Ask"
-      >
-        <ArrowUp size={18} />
-      </button>
+      {isRunning && onStop ? (
+        <button
+          type="button"
+          onClick={onStop}
+          className="absolute right-3 top-3 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
+          aria-label="Stop"
+          title="Stop generating"
+        >
+          <Square size={14} fill="currentColor" />
+        </button>
+      ) : (
+        <button
+          type="submit"
+          disabled={(!value.trim() && totalAttachments === 0) || busy}
+          className="absolute right-3 top-3 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
+          aria-label="Ask"
+        >
+          <ArrowUp size={18} />
+        </button>
+      )}
     </form>
   );
 }
