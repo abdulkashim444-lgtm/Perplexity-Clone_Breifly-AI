@@ -94,9 +94,12 @@ export async function* runPipeline({
     // "latest news on…"). Otherwise a vague prompt like "what is this" ran a
     // web search for "what is this" and drowned the uploaded PDF in junk.
     const hasUploads = uploadedDocs.length > 0;
+    // Skip web search for coding questions — the model answers better from its
+    // own training than from noisy scraped snippets.
+    const isCoding = plan.query_type === "coding";
     const wantsExternal = hasUploads
       ? /\b(latest|news|compare|vs\.?|versus|recent|today|price|current|according to|online|web|internet|search)\b/i.test(query)
-      : plan.needs_search;
+      : plan.needs_search && !isCoding;
 
     if (wantsExternal) {
       yield { type: "status", step: "searching", detail: `Searching ${plan.sub_queries.length} ${plan.sub_queries.length === 1 ? "query" : "queries"}` };

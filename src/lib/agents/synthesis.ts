@@ -8,6 +8,7 @@ export function buildSynthesisPrompt(
   history: ChatTurn[],
   simplify = false,
 ): { system: string; messages: { role: "user" | "assistant"; content: string }[] } {
+  const hasSources = sources.length > 0;
   const sourceBlock = sources
     .map(
       (s) =>
@@ -20,32 +21,36 @@ export function buildSynthesisPrompt(
     ? `\n- The user attached one or more files (sources whose URL starts with "attachment://"). Treat these as the primary subject. If the question is vague like "what is this", "summarize", or "explain", describe and summarize the attached source(s) directly — do not ask for more context.`
     : "";
 
-  const baseRules = `Rules:
+  const baseRules = hasSources
+    ? `Rules:
 - Every factual claim MUST include an inline citation like [1] or [2, 3] matching the source numbers below.
 - Do not invent facts or citations outside the numbered list.
 - If sources conflict, explicitly say so and cite both sides.
-- If the sources don't answer the question, say what's missing rather than guessing.
-- Do not include a "Sources" section — the UI renders that separately.${uploadRule}`;
-
+- If the sources don't fully answer the question, combine them with your own knowledge to give the best complete answer — never refuse.
+- Do not include a "Sources" section — the UI renders that separately.${uploadRule}`
+    : `Rules:
+- No external sources were retrieved for this question. Answer directly and confidently from your own knowledge.
+- Do NOT say "no sources were provided" or refuse — just answer the question fully and clearly.
+- Do not fabricate citation markers like [1] since there are no sources.
+- For coding questions, include a complete, correct, runnable code solution with a short explanation.`;
 
   const simplifyRules = `
 - SIMPLIFY MODE: write for a curious 12-year-old. Use short sentences (max ~15 words), plain everyday words, and no jargon. If a technical term is unavoidable, define it in parentheses.
 - Start with a one-sentence TL;DR in **bold**.
 - Prefer bullet lists over paragraphs. Keep each bullet to one idea.
-- Keep the whole answer under ~180 words unless the question truly needs more.
-- Still keep inline citations like [1] on every factual claim.`;
+- Keep the whole answer under ~180 words unless the question truly needs more.${hasSources ? "\n- Still keep inline citations like [1] on every factual claim." : ""}`;
 
   const styleRules = simplify
     ? simplifyRules
     : `
 - Prefer short paragraphs, bullet lists for enumerations, and a brief opening summary.`;
 
-  const system = `You are Searchly, an AI answer engine. Write a clear, well-structured markdown answer to the user's question using ONLY the provided sources.
+  const sourceSection = hasSources ? `\n\nSources:\n${sourceBlock}` : "";
+  const system = `You are Searchly, an AI answer engine. Write a clear, well-structured markdown answer to the user's question${hasSources ? " using the provided sources plus your own knowledge where helpful" : ""}.
 
-${baseRules}${styleRules}
+${baseRules}${styleRules}${sourceSection}`;
 
-Sources:
-${sourceBlock}`;
+
 
   const messages: { role: "user" | "assistant"; content: string }[] = [
     ...history.slice(-4).map((h) => ({ role: h.role, content: h.content })),
