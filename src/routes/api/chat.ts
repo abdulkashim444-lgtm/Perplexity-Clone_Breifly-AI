@@ -38,7 +38,7 @@ export const Route = createFileRoute("/api/chat")({
 
         // Guest mode: no auth, no persistence
         const guest = body.guest === true;
-        let supabase: Awaited<ReturnType<typeof import("@supabase/supabase-js").createClient>> | null = null;
+        let supabase: any = null;
         let userId: string | null = null;
 
         if (!guest) {
