@@ -11,6 +11,8 @@ import { AgentStatus } from "@/components/agent-status";
 import { Button } from "@/components/ui/button";
 import { getThreadMessages } from "@/lib/threads.functions";
 import { streamChat, type StreamEvent, type ChatAttachment, type ImageChatAttachment } from "@/lib/sse-client";
+import { getSimplifyPref } from "@/components/search-bar";
+
 import type { Citation, ChatTurn } from "@/lib/agents/types";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
