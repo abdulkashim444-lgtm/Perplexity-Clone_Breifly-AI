@@ -19,8 +19,8 @@ export const Route = createFileRoute("/g/$sessionId")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Guest search — Searchly" },
-      { name: "description", content: "A cited answer thread on Searchly — guest mode." },
+      { title: "Guest search — Breifly AI" },
+      { name: "description", content: "A cited answer thread on Breifly AI — guest mode." },
     ],
   }),
   component: GuestThread,
@@ -162,7 +162,7 @@ function GuestThread() {
       <header className="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-background/80 backdrop-blur z-10">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-serif">S</div>
-          <span className="font-serif text-lg">Searchly</span>
+          <span className="font-serif text-lg">Breifly AI</span>
           <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-accent/60 text-muted-foreground">Guest</span>
         </Link>
         <Link
