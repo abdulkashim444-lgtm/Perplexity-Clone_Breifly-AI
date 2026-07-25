@@ -124,7 +124,7 @@ export async function* runPipeline({
     yield { type: "sources", sources: citations };
 
     yield { type: "status", step: "writing", detail: "Writing answer" };
-    const stream = streamSynthesis(answerModel, query, ranked, history);
+    const stream = streamSynthesis(answerModel, query, ranked, history, simplify);
     let full = "";
     for await (const chunk of stream.textStream) {
       full += chunk;
