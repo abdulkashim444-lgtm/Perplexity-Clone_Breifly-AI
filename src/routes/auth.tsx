@@ -69,7 +69,7 @@ function AuthPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-serif text-lg">S</div>
+            <img src="/favicon.png" alt="Searchly" width={32} height={32} className="w-8 h-8 rounded-lg" />
             <span className="font-serif text-2xl">Searchly</span>
           </div>
           <h1 className="font-serif text-3xl leading-tight">Ask the web anything.</h1>
