@@ -53,6 +53,7 @@ function ThreadView() {
   const qc = useQueryClient();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [running, setRunning] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bootstrappedFor = useRef<string | null>(null);
 
