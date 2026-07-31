@@ -10,9 +10,12 @@ Inspired by Perplexity AI, ChatGPT Search, Google AI Mode, and Microsoft Copilot
 
 <img width="1918" height="922" alt="Image" src="https://github.com/user-attachments/assets/933d7cd3-22b9-413c-a544-c9168e031ab7" />
 
+
 Check out : https://breiflyai.lovable.app/
 
+
 # ✨ Features
+
 
 ## 🔎 Intelligent Search
 
