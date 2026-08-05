@@ -16,7 +16,6 @@ Check out : https://breiflyai.lovable.app/
 
 # ✨ Features
 
-
 ## 🔎 Intelligent Search
 
 * AI-Powered Search
@@ -29,6 +28,7 @@ Check out : https://breiflyai.lovable.app/
 * Fast Information Retrieval
 
 ---
+
 
 ## 🤖 AI Research Engine
 
@@ -76,6 +76,7 @@ Check out : https://breiflyai.lovable.app/
 
 # 🎯 Highlights
 
+
 * 🔎 AI-Powered Search Assistant
 * 🤖 Intelligent Research Platform
 * 📚 Smart Content Summarization
@@ -86,6 +87,7 @@ Check out : https://breiflyai.lovable.app/
 ---
 
 ## 🌟 Vision
+
 
 Breifly AI aims to redefine online research by combining conversational AI, intelligent search, and modern web technologies into a fast, intuitive, and production-ready knowledge platform that helps users discover, understand, and summarize information efficiently.
 
