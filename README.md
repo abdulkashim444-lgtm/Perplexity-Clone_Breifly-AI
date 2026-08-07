@@ -11,9 +11,6 @@ Inspired by Perplexity AI, ChatGPT Search, Google AI Mode, and Microsoft Copilot
 <img width="1918" height="922" alt="Image" src="https://github.com/user-attachments/assets/933d7cd3-22b9-413c-a544-c9168e031ab7" />
 
 
-Check out : https://breiflyai.lovable.app/
-
-
 # ✨ Features
 
 ## 🔎 Intelligent Search
@@ -92,4 +89,6 @@ Check out : https://breiflyai.lovable.app/
 Breifly AI aims to redefine online research by combining conversational AI, intelligent search, and modern web technologies into a fast, intuitive, and production-ready knowledge platform that helps users discover, understand, and summarize information efficiently.
 
 
-Check out : https://breiflyai.lovable.app/
+## Check out : 
+
+   https://breiflyai.lovable.app/
